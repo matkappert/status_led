@@ -1,0 +1,14 @@
+{
+  "name": "Status Led",
+  "keywords": "esp, esp8266, esp32, arduino, led, status, blink, flash",
+  "description": "An Arduino library to flash some status LEDs with non-blocking function",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matkappert/status_led"
+  },
+  "version": "1.0.0",
+  "frameworks": "arduino",
+  "platforms": [
+    "espressif"
+  ]
+}
