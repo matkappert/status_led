@@ -9,6 +9,9 @@
 
 
 #include "status_led.h"
+#if defined(ESP8266) || defined(ESP8285)
+	Ticker tick;
+#endif
 
 /************************************************************
     @brief Create an status_led instance
@@ -23,7 +26,7 @@ void status_led::init(uint8_t led_pin, bool led_inverted, callback_t led_callbac
 	self = led_callback;
 
 	pinMode(pin, OUTPUT);
-	digitalWrite(pin, true ^ inverted); // must be HIGH for esp8266 boot >.<
+	digitalWrite(pin, false ^ inverted);
 }
 
 
@@ -124,7 +127,7 @@ void status_led::addTask(uint8_t priority, uint8_t mode, uint8_t mode_value) {
 
 
 /************************************************************
-    @brief Remove the task and apply the next task 
+    @brief Remove the task and apply the next task
 
     @param priority, Que number [rang = 0-3]
 *************************************************************/
@@ -181,6 +184,7 @@ void status_led::_set(bool set_state, bool detach_timer) {
 
 
 void status_led::_attach_ms(uint32_t milliseconds) {
+#if defined(ESP32)
 	esp_timer_create_args_t _timerConfig;
 	_timerConfig.arg = reinterpret_cast<void*>(0);
 	_timerConfig.callback = reinterpret_cast<callback_with_arg_t>(self);
@@ -192,10 +196,14 @@ void status_led::_attach_ms(uint32_t milliseconds) {
 	}
 	esp_timer_create(&_timerConfig, &_timer);
 	esp_timer_start_once(_timer, milliseconds * 1000ULL);
+#elif defined(ESP8266) || defined(ESP8285)
+	tick.once_ms(milliseconds, self) ;
+#endif
 }
 
 
 void status_led::_detach() {
+#if defined(ESP32)
 	if (_timer) {
 		esp_timer_stop(_timer);
 		esp_timer_delete(_timer);
@@ -205,5 +213,8 @@ void status_led::_detach() {
 		task.value = 0;
 		task_state = 0;
 	}
+#elif defined(ESP8266) || defined(ESP8285)
+	tick.detach();
+#endif
 }
 

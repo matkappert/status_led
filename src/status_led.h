@@ -14,9 +14,15 @@
 
 #include "arduino.h"
 
+#if defined(ESP32)
 extern "C" {
 #include "esp_timer.h"
 }
+#elif defined(ESP8266) || defined(ESP8285)
+#include <Ticker.h>
+#endif
+
+
 
 enum TASK {
 	OFF,
@@ -72,7 +78,9 @@ class status_led {
 	void _nextTask();
 	void _set(bool set_state, bool detach_timer = true);
 
+#if defined(ESP32)
 	esp_timer_handle_t _timer;
+#endif
 	void _attach_ms(uint32_t milliseconds);
 	void _detach();
 };

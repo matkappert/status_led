@@ -16,7 +16,11 @@ void setup() {
 	    @param led_inverted, Invert the output pin
 	    @param callback, used for the timmer trigger
 	*************************************************************/
+	#if defined(ESP32)
 	status.init( 2, false, statusCallback);
+	#else
+	status.init( LED_BUILTIN, false, statusCallback);
+	#endif
 
 
 	/************************************************************
